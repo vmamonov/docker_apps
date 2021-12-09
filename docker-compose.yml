@@ -1,42 +1,32 @@
 version: "3.9"
 services:
-#    redis:
-#        build:
-#            context: ./docker/redis
-#            dockerfile: Dockerfile-redis
-#        volumes:
-#            - ./docker/volumes/redis/data:/data
-#        ports: 
-#            - "127.0.0.1:6379:6379"      
-#        command: "redis-server --protected-mode no"
-#        restart: always
     terhelper:
-        build: ./terhelper
+        build: ./apps/terhelper
         command: "mvn install -Pprod"
         depends_on:
             - "redis"
             - "tomcat"
             - "nginx"
         volumes: 
-            - ./docker/volumes/tomcat/webapps:/apps/docker/volumes/tomcat/webapps
-            - ./terhelper:/sites/terhelper
+            - ./volumes/tomcat/webapps:/docker_apps/volumes/tomcat/webapps
+            - ./apps/terhelper:/sites/terhelper
     redis:
         build:
-            context: ./docker/redis
+            context: ./redis
             dockerfile: Dockerfile-redis
         ports: 
             - "127.0.0.1:6379:6379"
         restart: always
         volumes:
-            - ./docker/volumes/redis/data:/data
+            - ./volumes/redis/data:/data
     tomcat:
         image: "tomcat:8.5.71-jdk17-temurin-focal"
         ports: 
             - "127.0.0.1:8080:8080"
         restart: always
         volumes: 
-            - ./docker/volumes/tomcat/webapps:/usr/local/tomcat/webapps
-            - ./terhelper:/sites/terhelper
+            - ./volumes/tomcat/webapps:/usr/local/tomcat/webapps
+            - ./apps/terhelper:/sites/terhelper
     nginx:
         image: "nginx:1.15-alpine"
         ports:
@@ -44,14 +34,14 @@ services:
             - "443:443"
         restart: always
         volumes: 
-            - ./docker/volumes/certbot/conf:/etc/letsencrypt
-            - ./docker/volumes/certbot/www:/var/www/certbot
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d
+            - ./volumes/certbot/conf:/etc/letsencrypt
+            - ./volumes/certbot/www:/var/www/certbot
+            - ./nginx/conf.d:/etc/nginx/conf.d
     certbot:
         image: "certbot/certbot"
         volumes:
-            - ./docker/volumes/certbot/conf:/etc/letsencrypt
-            - ./docker/volumes/certbot/www:/var/www/certbot
+            - ./volumes/certbot/conf:/etc/letsencrypt
+            - ./volumes/certbot/www:/var/www/certbot
             
 networks:
     default:
