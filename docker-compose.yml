@@ -15,7 +15,7 @@ services:
             context: ./redis
             dockerfile: Dockerfile-redis
         ports: 
-            - "127.0.0.1:6379:6379"
+            - "127.0.0.1:50000:50000"
         restart: always
         volumes:
             - ./volumes/redis/data:/data
